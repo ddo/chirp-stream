@@ -46,7 +46,7 @@ twitter.stream();
 
 ## API
 
-* ``.steam``: start streaming
+* ``.stream``: start streaming
 
 ## Events
 
