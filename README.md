@@ -11,7 +11,7 @@ twitter streaming apis in nodejs
 npm i ddo/twitter-stream
 ```
 
-## Usage - [Example]('/example.js')
+## Usage - [Example](/example.js)
 
 ```js
 var TwitterStream = require('twitter-stream');
