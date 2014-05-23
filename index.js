@@ -1,88 +1,146 @@
-var fs       = require('fs');
 var util     = require('util');
 var Writable = require('stream').Writable;
 
+var debug   = require('debug')('twitter-stream');
 var request = require('request');
 var OAuth   = require('oauth-1.0a');
 
-function TwitterStream() {
+module.exports = TwitterStream;
+
+function TwitterStream(opt) {
+    if(!(this instanceof TwitterStream)) {
+        return new TwitterStream(opt);
+    }
+
+    if(!(opt.consumer && opt.consumer.public && opt.consumer.secret)) {
+        throw new Error('consumer.public and consumer.secret are required');
+    }
+
+    if(!(opt.token && opt.token.public && opt.token.secret)) {
+        throw new Error('token.public and token.secret are required');
+    }
+
+    if(!opt.url) {
+        throw new Error('url is required');
+    }
+
+    this.consumer = opt.consumer;
+    this.token    = opt.token;
+
+    this.oauth = OAuth({
+        consumer: this.consumer
+    });
+
+    this.url    = opt.url;
+    this.method = opt.method || 'GET';
+
+    //init as a writable stream
     Writable.call(this);
 
-    this.buffer = [];
+    //incomplete buffers
+    this.incomplete_buffers = [];
 }
 
-util.inherits(Ddo, Writable);
+//inherit from writable stream
+util.inherits(TwitterStream, Writable);
 
-Ddo.prototype._write = function(chunk, encoding, next) {
+/**
+ * debug
+ * @param  {String} title
+ * @param  {String} data
+ * @api private
+ */
+TwitterStream.prototype._log = function(title, data) {
+    debug('%s - %j', title, data);
+};
+
+/**
+ * override the wriable stream method
+ * @api private
+ */
+TwitterStream.prototype._write = function(chunk, encoding, next) {
+    //convert buffer into utf-8 then trim
     var str = chunk.toString().trim();
+
+    //twitter also stream the enter chars every some seconds
     if(str.length) {
+        
+        //need to wait the next buffer to get the complete data
+        //#parse() solve it for us
         var data = this.parse(str);
         if(data) {
-            if(data.text) {
-                console.log(data.text);
-                console.log(data.user.name);
-            }
+            this._log('#_write - new data', str);
+            this.emit('data', data);
         }
     }
+
+    //next buffer
     next();
 };
 
-Ddo.prototype.parse = function(str) {
+/**
+ * parse twitter data to JSON
+ * @param  {String} str
+ * @return {data} JSON or null
+ * @api private
+ *
+ * some time Twitter stream just a piece of data
+ * so need to wait the next buffer to append
+ */
+TwitterStream.prototype.parse = function(str) {
     var self = this;
-    var data = false;
+    var data = null;
 
     try {
         data = JSON.parse(str); 
     } catch(e) {
-        console.log('fail 1');
+        self._log('#parse - new buffer fail', str);
 
-        self.buffer.push(str);
-        str = self.merge();
+        //push to incomplete buffer array for next parse
+        self.incomplete_buffers.push(str);
+        
+        //get the incomplete buffer
+        str = self._getIncompleteBuffer();
+
         try {
             data = JSON.parse(str); 
         } catch(e) {
-            console.log('fail 2');
+            self._log('#parse - incomplete buffer fail', str);
         }
     }
 
     if(data) {
-        console.log('clear');
-        self.buffer = [];
+        self._log('#parse - clean buffer');
+        self.incomplete_buffers = [];
     }
 
     return data;
 };
 
-Ddo.prototype.merge = function() {
+/**
+ * @return {String} all incomplete buffers as string
+ * @api private
+ */
+TwitterStream.prototype._getIncompleteBuffer = function() {
     var str = '';
-    for(var i = 0; i < this.buffer.length; i++) {
-        str += this.buffer[i];
+    for(var i = 0; i < this.incomplete_buffers.length; i++) {
+        str += this.incomplete_buffers[i];
     }
+    debug('#_getIncompleteBuffer', str);
     return str;
 };
 
-var ddo = new Ddo();
+TwitterStream.prototype.stream = function() {
+    var self = this;
 
-var oauth = OAuth({
-    consumer: {
-        public: 'sZT0SD2jf84lCdF8PWTLQ',
-        secret: 'u25CRWvCpCB61ndpRHgiQ5EkioqNB7cPL43uQ3bk'
-    },
-    signature_method: 'HMAC-SHA1'
-});
+    var request_data = {
+        url: self.url,
+        method: self.method
+    };
 
-var token = {
-    public: '61260444-Esv29YumfnPt4A7l5uyYWp6Sm6zJBMKmdY6kwLFH5',
-    secret: 'gfNAhxRs9WjSfAtju570RRNTrbD1TyJNANq0cuYUoD7T9'
+    request({
+        url: request_data.url,
+        method: request_data.method,
+        qs: self.oauth.authorize(request_data, self.token)
+    }).pipe(this);
 };
-
-var request_data = {
-    url: 'https://userstream.twitter.com/1.1/user.json',
-    method: 'GET'
-};
-
-request({
-    url: request_data.url,
-    method: request_data.method,
-    qs: oauth.authorize(request_data, token)
-}).pipe(ddo);
