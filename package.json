@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/ddo/twitter-stream",
   "dependencies": {
+    "debug": "^0.8.1",
     "oauth-1.0a": "^0.1.0",
     "request": "^2.36.0"
   },
