@@ -1,21 +1,19 @@
 twitter-stream
 ==============
 
-twitter streaming apis in nodejs
+> twitter streaming apis in nodejs
 
 *****
 
 ## Installation
 
 ```
-npm i ddo/twitter-stream
+npm i ddo/twitter-stream --save
 ```
 
 ## Usage - [Example](/example.js)
 
 ```js
-var TwitterStream = require('twitter-stream');
-
 var twitter = new TwitterStream({
     consumer: {
         public: 'xxxxx',
@@ -24,32 +22,51 @@ var twitter = new TwitterStream({
     token: {
         public: 'xxxxx',
         secret: 'xxxxx'
-    },
-    url: 'https://userstream.twitter.com/1.1/user.json',
-    method: 'GET'
+    }
 });
 
-twitter.on('data', function(data) {
+var userstream = twitter.stream('https://userstream.twitter.com/1.1/user.json');
+
+userstream.on('data', function(data) {
+    console.log('data');
     console.log(data);
 });
 
-//start streaming !
-twitter.stream();
+userstream.on('json', function(json) {
+    console.log('json');
+    console.log(json);
+});
+
+userstream.on('end', function() {
+    console.log('end');
+});
+
+userstream.on('error', function(error) {
+    console.log('error');
+    console.log(error);
+});
 ```
 
 ## Options
 
 * ``consumer``: ``Object`` Twitter app public and secret consumer.
 * ``token``: ``Object`` Client public and secret token.
-* ``url``: ``String`` Twitter endpoint
-* ``method``: ``String`` default ``GET``
+
 
 ## API
 
-* ``.stream``: start streaming
+### .stream()
+create a stream
 
-## Events
+#### options
+* ``url``: ``String`` Twitter endpoint
+* ``method``: ``String`` default ``GET``
 
-* ``data``: on new data
-* ``error`` *todo*
-* ``end`` *todo*
+#### return
+streaming object
+
+#### events
+* ``data``: ``String`` twitter raw data. Beware: there are some incomplete data
+* ``json``: ``Object`` twitter data **Use this instead of ``data``**
+* ``error``: status code (404, 503, ...)
+* ``end``
