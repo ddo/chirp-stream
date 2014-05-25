@@ -1,6 +1,3 @@
-var util     = require('util');
-var Writable = require('stream').Writable;
-
 var debug   = require('debug')('twitter-stream');
 var request = require('request');
 var OAuth   = require('oauth-1.0a');
@@ -20,127 +17,113 @@ function TwitterStream(opt) {
         throw new Error('token.public and token.secret are required');
     }
 
-    if(!opt.url) {
-        throw new Error('url is required');
-    }
-
     this.consumer = opt.consumer;
     this.token    = opt.token;
 
     this.oauth = OAuth({
         consumer: this.consumer
     });
-
-    this.url    = opt.url;
-    this.method = opt.method || 'GET';
-
-    //init as a writable stream
-    Writable.call(this);
-
-    //incomplete buffers
-    this.incomplete_buffers = [];
 }
-
-//inherit from writable stream
-util.inherits(TwitterStream, Writable);
 
 /**
  * debug
- * @param  {String} title
- * @param  {String} data
  * @api private
  */
-TwitterStream.prototype._log = function(title, data) {
-    debug('%s - %j', title, data);
-};
+TwitterStream.prototype._log = debug;
 
 /**
- * override the wriable stream method
- * @api private
+ * stream
+ * @param  {String} url streaming endpoint
+ * @param  {Object} opt request option
+ * @return {stream.Readable} stream.Readable object
  */
-TwitterStream.prototype._write = function(chunk, encoding, next) {
-    //convert buffer into utf-8 then trim
-    var str = chunk.toString().trim();
-
-    //twitter also stream the enter chars every some seconds
-    if(str.length) {
-        
-        //need to wait the next buffer to get the complete data
-        //#parse() solve it for us
-        var data = this.parse(str);
-        if(data) {
-            this._log('#_write - new data', str);
-            this.emit('data', data);
-        }
-    }
-
-    //next buffer
-    next();
-};
-
-/**
- * parse twitter data to JSON
- * @param  {String} str
- * @return {data} JSON or null
- * @api private
- *
- * some time Twitter stream just a piece of data
- * so need to wait the next buffer to append
- */
-TwitterStream.prototype.parse = function(str) {
+TwitterStream.prototype.stream = function(url, opt) {
     var self = this;
-    var data = null;
 
-    try {
-        data = JSON.parse(str); 
-    } catch(e) {
-        self._log('#parse - new buffer fail', str);
-
-        //push to incomplete buffer array for next parse
-        self.incomplete_buffers.push(str);
-        
-        //get the incomplete buffer
-        str = self._getIncompleteBuffer();
-
-        try {
-            data = JSON.parse(str); 
-        } catch(e) {
-            self._log('#parse - incomplete buffer fail', str);
-        }
+    if(typeof url !== 'string') {
+        throw new Error('url is required');
     }
 
-    if(data) {
-        self._log('#parse - clean buffer');
-        self.incomplete_buffers = [];
+    if(!opt) {
+        opt = {};
     }
 
-    return data;
-};
-
-/**
- * @return {String} all incomplete buffers as string
- * @api private
- */
-TwitterStream.prototype._getIncompleteBuffer = function() {
-    var str = '';
-    for(var i = 0; i < this.incomplete_buffers.length; i++) {
-        str += this.incomplete_buffers[i];
-    }
-    debug('#_getIncompleteBuffer', str);
-    return str;
-};
-
-TwitterStream.prototype.stream = function() {
-    var self = this;
+    opt.method = opt.method || 'GET';
+    opt.data   = opt.data || {};
 
     var request_data = {
-        url: self.url,
-        method: self.method
+        url: url,
+        method: opt.method,
+        data: opt.data
     };
 
-    request({
+    var readable = request({
         url: request_data.url,
         method: request_data.method,
-        qs: self.oauth.authorize(request_data, self.token)
-    }).pipe(this);
+        qs: self.oauth.authorize(request_data, self.token),
+        encoding: 'utf8'
+    });
+
+    var incomplete_json = [];
+
+    readable.on('response', function(res) {
+        self._log('statusCode', res.statusCode);
+        
+        if(res.statusCode != 200) {
+            readable.emit('error', res.statusCode);
+        }
+    });
+
+    readable.on('data', function(str) {
+        str = str.trim();
+
+        if(!str.length) {
+            self._log('newline');
+            return;
+        }
+
+        var json = null;
+
+        //try to parse
+        try {
+            json = JSON.parse(str);
+        } catch(e) {
+            self._log('incomplete json', str);
+        }
+
+        if(json) {
+            self._log('json', str);
+
+            //clean incomplete json array
+            incomplete_json = [];
+
+            //emit json event
+            return readable.emit('json', json);
+        }
+
+        //push to incomplete json array
+        incomplete_json.push(str);
+
+        //get all the incomplete json
+        str = incomplete_json.join('');
+
+        //try to parse
+        try {
+            json = JSON.parse(str);
+        } catch(e) {
+            self._log('incomplete json from join', str);
+        }
+
+        if(json) {
+            self._log('json', str);
+
+            //clean incomplete json array
+            incomplete_json = [];
+
+            //emit json event
+            return readable.emit('json', json);
+        }
+    });
+
+    return readable;
 };
