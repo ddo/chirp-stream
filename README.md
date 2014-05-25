@@ -1,20 +1,18 @@
-twitter-stream
+chirp-stream
 ==============
 
 > twitter streaming apis in nodejs
 
-*****
-
 ## Installation
 
 ```
-npm i ddo/twitter-stream --save
+npm i chirp-stream --save
 ```
 
-## Usage - [Example](/example.js)
+## Usage
 
 ```js
-var twitter = new TwitterStream({
+var twitter = Chirp({
     consumer: {
         public: 'xxxxx',
         secret: 'xxxxx'
@@ -90,11 +88,12 @@ create a stream
 #### options
 * ``url``: ``String`` Twitter endpoint
 * ``method``: ``String`` default ``GET``
+* ``data``: ``Object`` Twitter parameters
 
 #### return
 streaming object
 
-#### events
+#### event
 * ``data``: ``String`` twitter raw data. Beware: there are some incomplete data
 * ``json``: ``Object`` twitter data **Use this instead of ``data``**
 * ``error``: status code (404, 503, ...)

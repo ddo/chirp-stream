@@ -1,5 +1,5 @@
 {
-  "name": "twitter-stream",
+  "name": "chirp-stream",
   "version": "0.0.1",
   "description": "twitter streaming apis in nodejs",
   "main": "index.js",

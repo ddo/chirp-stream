@@ -1,12 +1,12 @@
-var debug   = require('debug')('twitter-stream');
+var debug   = require('debug')('chirp-stream');
 var request = require('request');
 var OAuth   = require('oauth-1.0a');
 
-module.exports = TwitterStream;
+module.exports = ChirpStream;
 
-function TwitterStream(opt) {
-    if(!(this instanceof TwitterStream)) {
-        return new TwitterStream(opt);
+function ChirpStream(opt) {
+    if(!(this instanceof ChirpStream)) {
+        return new ChirpStream(opt);
     }
 
     if(!(opt.consumer && opt.consumer.public && opt.consumer.secret)) {
@@ -29,7 +29,7 @@ function TwitterStream(opt) {
  * debug
  * @api private
  */
-TwitterStream.prototype._log = debug;
+ChirpStream.prototype._log = debug;
 
 /**
  * stream
@@ -37,7 +37,7 @@ TwitterStream.prototype._log = debug;
  * @param  {Object} opt request option
  * @return {stream.Readable} stream.Readable object
  */
-TwitterStream.prototype.stream = function(url, opt) {
+ChirpStream.prototype.stream = function(url, opt) {
     var self = this;
 
     if(typeof url !== 'string') {
@@ -68,7 +68,7 @@ TwitterStream.prototype.stream = function(url, opt) {
 
     readable.on('response', function(res) {
         self._log('statusCode', res.statusCode);
-        
+
         if(res.statusCode != 200) {
             readable.emit('error', res.statusCode);
         }
