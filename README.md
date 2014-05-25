@@ -1,5 +1,11 @@
-chirp-stream
+chirp-stream [![Build Status](https://travis-ci.org/ddo/chirp-stream.svg)](https://travis-ci.org/ddo/chirp-stream)
 ==============
+
+[![NPM version](https://badge.fury.io/js/chirp-stream.png)](http://badge.fury.io/js/chirp-stream)
+[![Dependency Status](https://david-dm.org/ddo/chirp-stream.png?theme=shields.io)](https://david-dm.org/ddo/chirp-stream)
+
+[![Coverage Status](https://coveralls.io/repos/ddo/chirp-stream/badge.png?branch=master)](https://coveralls.io/r/ddo/chirp-stream?branch=master)
+[![Code Climate](https://codeclimate.com/github/ddo/chirp-stream.png)](https://codeclimate.com/github/ddo/chirp-stream)
 
 > twitter streaming apis in nodejs
 
