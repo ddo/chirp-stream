@@ -1,17 +1,21 @@
-var TwitterStream = require('twitter-stream');
+var ChirpStream = require('./');
 
-var twitter = new TwitterStream({
+var twitter = new ChirpStream({
     consumer: {
-        public: 'xxxxx',
-        secret: 'xxxxx'
+        public: process.env.TWITTER_CONSUMER_PUBLIC,
+        secret: process.env.TWITTER_CONSUMER_SECRET
     },
     token: {
-        public: 'xxxxx',
-        secret: 'xxxxx'
+        public: process.env.TWITTER_TOKEN_PUBLIC,
+        secret: process.env.TWITTER_SECRET_SECRET
     }
 });
 
-var userstream = twitter.stream('https://userstream.twitter.com/1.1/user.json');
+var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.json', {
+    data: {
+        follow: 61260444 //me :)
+    }
+});
 
 userstream.on('data', function(data) {
     console.log('data');
