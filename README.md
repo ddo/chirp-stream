@@ -47,7 +47,36 @@ userstream.on('error', function(error) {
 });
 ```
 
-## Options
+## [Example](/example.js)
+
+### Public streams
+
+#### statuses/filter
+
+```js
+var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.json', {
+    data: {
+        follow: 61260444 //me :)
+    }
+});
+//listen to events...
+```
+
+#### statuses/sample
+
+```js
+var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/sample.json');
+//listen to events...
+```
+
+### User streams
+
+```js
+var userstream = twitter.stream('https://userstream.twitter.com/1.1/user.json');
+//listen to events...
+```
+
+## Option
 
 * ``consumer``: ``Object`` Twitter app public and secret consumer.
 * ``token``: ``Object`` Client public and secret token.
