@@ -49,12 +49,12 @@ ChirpStream.prototype.stream = function(url, opt) {
     }
 
     opt.method = opt.method || 'GET';
-    opt.data   = opt.data || {};
+    opt.param  = opt.param || {};
 
     var request_data = {
         url: url,
         method: opt.method,
-        data: opt.data
+        data: opt.param
     };
 
     var readable = request({
