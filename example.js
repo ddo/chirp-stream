@@ -11,15 +11,11 @@ var twitter = new ChirpStream({
     }
 });
 
-var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.json', {
-    data: {
-        follow: 61260444 //me :)
-    }
-});
+var userstream = twitter.stream('https://userstream.twitter.com/1.1/user.json');
 
 userstream.on('data', function(data) {
-    console.log('data');
-    console.log(data);
+    // console.log('data');
+    // console.log(data);
 });
 
 userstream.on('json', function(json) {
