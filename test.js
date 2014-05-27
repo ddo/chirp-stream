@@ -11,7 +11,7 @@ describe("chirp-stream", function() {
             },
             token: {
                 public: process.env.TWITTER_TOKEN_PUBLIC,
-                secret: process.env.TWITTER_SECRET_SECRET
+                secret: process.env.TWITTER_TOKEN_SECRET
             }
         });
 
