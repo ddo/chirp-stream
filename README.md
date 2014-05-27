@@ -32,12 +32,10 @@ var twitter = Chirp({
 var userstream = twitter.stream('https://userstream.twitter.com/1.1/user.json');
 
 userstream.on('data', function(data) {
-    console.log('data');
     console.log(data);
 });
 
 userstream.on('json', function(json) {
-    console.log('json');
     console.log(json);
 });
 
@@ -46,7 +44,6 @@ userstream.on('end', function() {
 });
 
 userstream.on('error', function(error) {
-    console.log('error');
     console.log(error);
 });
 ```
@@ -58,7 +55,7 @@ userstream.on('error', function(error) {
 #### statuses/filter
 
 ```js
-var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.json', {
+var filterstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.json', {
     data: {
         follow: 61260444 //me :)
     }
@@ -69,7 +66,7 @@ var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.
 #### statuses/sample
 
 ```js
-var userstream = twitter.stream('https://stream.twitter.com/1.1/statuses/sample.json');
+var samplestream = twitter.stream('https://stream.twitter.com/1.1/statuses/sample.json');
 //listen to events...
 ```
 
@@ -102,5 +99,6 @@ streaming object
 #### event
 * ``data``: ``String`` twitter raw data. Beware: there are some incomplete data
 * ``json``: ``Object`` twitter data **Use this instead of ``data``**
+* ``response``: ``Object`` response object
 * ``error``: status code (404, 503, ...)
 * ``end``
