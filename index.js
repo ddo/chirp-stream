@@ -34,27 +34,26 @@ ChirpStream.prototype._log = debug;
 /**
  * stream
  * @param  {String} url streaming endpoint
- * @param  {Object} opt request option
+ * @param  {Object} param twitter parameters
+ * @param  {String} method twitter endpoint
+ * 
  * @return {stream.Readable} stream.Readable object
  */
-ChirpStream.prototype.stream = function(url, opt) {
+ChirpStream.prototype.stream = function(url, param, method) {
     var self = this;
 
     if(typeof url !== 'string') {
         throw new Error('url is required');
     }
 
-    if(!opt) {
-        opt = {};
-    }
-
-    opt.method = opt.method || 'GET';
-    opt.param  = opt.param || {};
+    param  = param || {};
+    method = method || 'GET';
+    
 
     var request_data = {
         url: url,
-        method: opt.method,
-        data: opt.param
+        method: method,
+        data: param
     };
 
     var readable = request({

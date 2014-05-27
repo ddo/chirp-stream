@@ -93,8 +93,8 @@ create a stream
 
 #### options
 * ``url``: ``String`` Twitter endpoint
+* ``param``: ``Object`` Twitter parameters ``optional``
 * ``method``: ``String`` default ``GET``
-* ``param``: ``Object`` Twitter parameters
 
 #### return
 streaming object
