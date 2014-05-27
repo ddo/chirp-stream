@@ -1,31 +1,37 @@
-var TwitterStream = require('./');
+var ChirpStream = require('./');
 
-var twitter = new TwitterStream({
+var twitter = ChirpStream({
     consumer: {
         public: process.env.TWITTER_CONSUMER_PUBLIC,
         secret: process.env.TWITTER_CONSUMER_SECRET
     },
     token: {
         public: process.env.TWITTER_TOKEN_PUBLIC,
-        secret: process.env.TWITTER_SECRET_SECRET
-    },
-    url: 'https://userstream.twitter.com/1.1/user.jsonn'
+        secret: process.env.TWITTER_TOKEN_SECRET
+    }
 });
 
-twitter.on('data', function(data) {
-    console.log('data');
-    console.log(data);
+var stream = twitter.stream('https://userstream.twitter.com/1.1/user.json');
+
+
+stream.on('response', function(res) {
+    console.log('response');
+    console.log(res);
 });
 
-twitter.on('error', function(data) {
+stream.on('data', function(data) {
+    // console.log('data');
+    // console.log(data);
+});
+
+stream.on('error', function(data) {
     console.log('error');
     console.log(data);
 });
 
-twitter.on('finish', function(data) {
+stream.on('finish', function() {
     console.log('finish');
 });
 
 
-
-twitter.stream();
+stream.start();

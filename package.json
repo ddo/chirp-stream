@@ -1,6 +1,6 @@
 {
-  "name": "twitter-stream",
-  "version": "0.0.1",
+  "name": "chirp-stream",
+  "version": "1.0.0",
   "description": "twitter streaming apis in nodejs",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://ddo@github.com/ddo/twitter-stream.git"
+    "url": "https://ddo@github.com/ddo/chirp-stream.git"
   },
   "keywords": [
+    "chirp",
     "twitter",
     "stream",
     "api"
@@ -18,9 +19,9 @@
   "author": "ddo <joeddo89@gmail.com> (http://ddo.me/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ddo/twitter-stream/issues"
+    "url": "https://github.com/ddo/chirp-stream/issues"
   },
-  "homepage": "https://github.com/ddo/twitter-stream",
+  "homepage": "https://github.com/ddo/chirp-stream",
   "dependencies": {
     "debug": "^0.8.1",
     "oauth-1.0a": "^0.1.0",
