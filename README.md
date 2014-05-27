@@ -56,9 +56,7 @@ userstream.on('error', function(error) {
 
 ```js
 var filterstream = twitter.stream('https://stream.twitter.com/1.1/statuses/filter.json', {
-    data: {
-        follow: 61260444 //me :)
-    }
+    follow: 61260444 //me :)
 });
 //listen to events...
 ```
