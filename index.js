@@ -9,7 +9,7 @@ function ChirpStream(opt) {
         return new ChirpStream(opt);
     }
 
-    if(!(opt.consumer && opt.consumer.public && opt.consumer.secret)) {
+    if(!(opt && opt.consumer && opt.consumer.public && opt.consumer.secret)) {
         throw new Error('consumer.public and consumer.secret are required');
     }
 
