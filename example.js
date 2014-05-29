@@ -18,6 +18,11 @@ userstream.on('data', function(data) {
     // console.log(data);
 });
 
+userstream.on('response', function(res) {
+    console.log('response');
+    console.log(res);
+});
+
 userstream.on('json', function(json) {
     console.log('json');
     console.log(json);
