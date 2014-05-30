@@ -1,6 +1,5 @@
-var debug   = require('debug')('chirp-stream');
-var request = require('request');
-var OAuth   = require('oauth-1.0a');
+var debug = require('debug')('chirp-stream');
+var OAuth = require('oauth-request');
 
 module.exports = ChirpStream;
 
@@ -21,7 +20,8 @@ function ChirpStream(opt) {
     this.token    = opt.token;
 
     this.oauth = OAuth({
-        consumer: this.consumer
+        consumer: this.consumer,
+        token: this.token
     });
 }
 
@@ -49,19 +49,21 @@ ChirpStream.prototype.stream = function(url, param, method) {
     param  = param || {};
     method = method || 'GET';
     
+    var readable;
 
-    var request_data = {
-        url: url,
-        method: method,
-        data: param
-    };
-
-    var readable = request({
-        url: request_data.url,
-        method: request_data.method,
-        qs: self.oauth.authorize(request_data, self.token),
-        encoding: 'utf8'
-    });
+    if(method === 'GET') {
+        readable = self.oauth.get({
+            url: url,
+            qs: param,
+            encoding: 'utf8'
+        });
+    } else {
+        readable = self.oauth.post({
+            url: url,
+            form: param,
+            encoding: 'utf8'
+        });
+    }
 
     var incomplete_json = [];
 

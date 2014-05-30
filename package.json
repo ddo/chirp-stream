@@ -24,8 +24,7 @@
   "homepage": "https://github.com/ddo/chirp-stream",
   "dependencies": {
     "debug": "^0.8.1",
-    "oauth-1.0a": "^0.1.0",
-    "request": "^2.36.0"
+    "oauth-request": "0.0.1"
   },
   "devDependencies": {
     "chai": "^1.9.1",

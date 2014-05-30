@@ -62,8 +62,6 @@ describe("chirp-stream", function() {
         });
     });
 
-    https://stream.twitter.com/1.1/statuses/filter.json
-
     describe("invalid init", function() {
         it("should throw error", function() {
             expect(function() {
